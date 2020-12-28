@@ -2,6 +2,7 @@ const roteador = require('express').Router()
 const TabelaFornecedores = require('./tabelaFornecedores')
 const Fornecedor = require('./fornecedor')
 const SerializadorFornecedor = require('../../serializador').SerializadorFornecedor
+const RotasProdutos = require('./produtos/index')
 
 roteador.get('/', async (req, res) => {
     const resultados = await TabelaFornecedores.listar()
@@ -14,7 +15,6 @@ roteador.get('/', async (req, res) => {
 
 roteador.post('/', async (req, res, next) => {
     try {
-
         const fornecedor = new Fornecedor(req.body)
         await fornecedor.criar()
         const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'))
@@ -26,10 +26,10 @@ roteador.post('/', async (req, res, next) => {
     }
 })
 
-roteador.get('/:id', async (req, res, next) => {
+roteador.get('/:fornecedor_id', async (req, res, next) => {
     try {
-        const id = req.params.id
-        const fornecedor = new Fornecedor({ id: id })
+        const fornecedor_id = req.params.fornecedor_id
+        const fornecedor = new Fornecedor({ id: fornecedor_id })
         await fornecedor.carregar()
         const serializador = new SerializadorFornecedor(
             res.getHeader('Content-Type'),
@@ -43,11 +43,11 @@ roteador.get('/:id', async (req, res, next) => {
     }
 })
 
-roteador.put('/:id', async (req, res, next) => {
+roteador.put('/:fornecedor_id', async (req, res, next) => {
     try {
 
-        const id = req.params.id
-        const dados = Object.assign({}, req.body, { id: id })
+        const fornecedor_id = req.params.fornecedor_id
+        const dados = Object.assign({}, req.body, { id: fornecedor_id })
         const fornecedor = new Fornecedor(dados)
         await fornecedor.atualizar()
 
@@ -59,10 +59,10 @@ roteador.put('/:id', async (req, res, next) => {
 
 })
 
-roteador.delete('/:id', async (req, res, next) => {
+roteador.delete('/:fornecedor_id', async (req, res, next) => {
     try {
-        const id = req.params.id
-        const fornecedor = new Fornecedor({ id })
+        const fornecedor_id = req.params.fornecedor_id
+        const fornecedor = new Fornecedor({ id: fornecedor_id })
         await fornecedor.carregar()
         await fornecedor.deletar()
 
@@ -71,5 +71,7 @@ roteador.delete('/:id', async (req, res, next) => {
         next(erro)
     }
 })
+
+roteador.use('/:fornecedor_id/produtos', RotasProdutos)
 
 module.exports = roteador

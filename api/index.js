@@ -2,7 +2,9 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const config = require('config')
-const roteador = require('./rotas/fornecedores/index')
+
+const rotasFornecedores = require('./rotas/fornecedores/index')
+
 const NaoEncontrado = require('./erros/NaoEncontrado')
 const CampoInvalido = require('./erros/CampoInvalido')
 const DadosNaoFornecidos = require('./erros/DadosNaoFornecidos')
@@ -26,7 +28,7 @@ app.use((req, res, next) => {
     }
 })
 
-app.use('/api/fornecedores', roteador)
+app.use('/api/fornecedores', rotasFornecedores)
 
 app.use((erro, req, res, next) => {
     let status = 500
