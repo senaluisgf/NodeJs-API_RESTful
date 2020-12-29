@@ -8,7 +8,7 @@ class Serializador {
 
     xml(dados) {
         let tag = this.tagSingular
-        if(Array.isArray(dados)){
+        if (Array.isArray(dados)) {
             tag = this.tagPlural
             dados = dados.map(fornecedor => {
                 return {
@@ -70,9 +70,20 @@ class SerializadorErro extends Serializador {
     }
 }
 
+class SerializadorProduto extends Serializador {
+    constructor(contentType, extras) {
+        super()
+        this.contentType = contentType
+        this.camposPublicos = ['id', 'titulo', 'preco', 'estoque'].concat(extras || [])
+        this.tagSingular = 'produto'
+        this.tagPlural = 'produtos'
+    }
+}
+
 module.exports = {
     Serializador: Serializador,
     SerializadorFornecedor: SerializadorFornecedor,
     SerializadorErro: SerializadorErro,
+    SerializadorProduto: SerializadorProduto,
     formatosAceitos: ['*/*', 'application/json', 'application/xml']
 }
