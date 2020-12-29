@@ -72,6 +72,18 @@ roteador.delete('/:fornecedor_id', async (req, res, next) => {
     }
 })
 
-roteador.use('/:fornecedor_id/produtos', RotasProdutos)
+const verificaFornecedor = async (req, res, next) => {
+    try {
+        const fornecedor_id = req.params.fornecedor_id
+        const fornecedor = new Fornecedor({ id: fornecedor_id })
+        await fornecedor.carregar()
+        req.fornecedor = fornecedor
+        next()
+    } catch (erro) {
+        next(erro)
+    }
+}
+
+roteador.use('/:fornecedor_id/produtos', verificaFornecedor, RotasProdutos)
 
 module.exports = roteador

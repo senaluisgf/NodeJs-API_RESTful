@@ -1,6 +1,6 @@
 class NaoEncontrado extends Error {
-    constructor() {
-        super("Fornecedor Não encontrado!")
+    constructor(entidade) {
+        super(`${entidade} Não encontrado!`)
         this.name = "NaoEncontrado"
         this.idErro = 0
     }
