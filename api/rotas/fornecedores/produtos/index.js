@@ -20,6 +20,14 @@ roteador.post('/', async (req, res, next) => {
         const produto = new Produto(dados)
         await produto.criar()
         const serializador = new serializadorProduto(res.getHeader('Content-Type'))
+
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime()
+        res.set('ETag', produto.versao)
+        res.setHeader('Last-Modified', timestamp)
+        res.setHeader(
+            'Location',
+            `/api/fornecedores/${produto.fornecedor}/produtos/${produto.id}`
+        )
         res.status(201).send(
             serializador.serializar(produto)
         )
@@ -40,9 +48,30 @@ roteador.get('/:produto_id', async (req, res, next) => {
             res.getHeader('Content-Type'),
             ['preco', 'estoque', 'fornecedor', 'dataCriacao', 'dataAtualizacao', 'versao']
         )
+
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime()
+        res.set('ETag', produto.versao)
+        res.setHeader('Last-Modified', timestamp)
         res.send(
             serializador.serializar(produto)
         )
+    } catch (erro) {
+        next(erro)
+    }
+})
+
+roteador.head('/:produto_id', async (req, res, next) => {
+    try {
+        const produto = new Produto({
+            id: req.params.produto_id,
+            fornecedor: req.fornecedor.id
+        })
+        await produto.carregar()
+
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime()
+        res.set('ETag', produto.versao)
+        res.setHeader('Last-Modified', timestamp)
+        res.status(200)
     } catch (erro) {
         next(erro)
     }
@@ -57,6 +86,11 @@ roteador.put('/:produto_id', async (req, res, next) => {
         const dados = Object.assign({}, ids, req.body)
         const produto = new Produto(dados)
         await produto.atualizar()
+        await produto.carregar()
+
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime()
+        res.set('ETag', produto.versao)
+        res.setHeader('Last-Modified', timestamp)
         res.status(204).end()
     } catch (erro) {
         next(erro)
@@ -89,6 +123,11 @@ roteador.post('/:produto_id/diminuir-estoque', async (req, res, next) => {
         await produto.carregar()
         produto.estoque = produto.estoque - req.body.quantidade
         await produto.diminuirEstoque()
+        await produto.carregar()
+
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime()
+        res.set('ETag', produto.versao)
+        res.setHeader('Last-Modified', timestamp)
         res.status(204).end()
     } catch (erro) {
         next(erro)
