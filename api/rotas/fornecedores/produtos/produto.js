@@ -51,25 +51,44 @@ class Produto {
     async atualizar() {
         await tabelaProdutos.pegaPorId(this.id, this.fornecedor)
 
-        const campos = ['titulo', 'preco', 'estoque']
         const dadosAtualizar = {}
 
-        campos.forEach(campo => {
-            const valor = this[campo]
-            if (valor !== undefined && valor !== "") {
-                dadosAtualizar[campo] = valor
-            }
-        })
+        if (typeof this.titulo === 'string' && this.titulo.length > 0) {
+            dadosAtualizar.titulo = this.titulo
+        }
+        if (typeof this.preco === 'number' && this.preco > 0) {
+            dadosAtualizar.preco = this.preco
+        }
+        if (typeof this.estoque === 'number' && this.estoque >= 0) {
+            dadosAtualizar.estoque = this.estoque
+        }
 
         if (Object.keys(dadosAtualizar).length == 0) {
             throw new DadosNaoFornecidos()
         } else {
-            await tabelaProdutos.atualizar(this.id, this.fornecedor, dadosAtualizar)
+            await tabelaProdutos.atualizar(
+                {
+                    id: this.id,
+                    fornecedor: this.fornecedor
+                },
+                dadosAtualizar
+            )
         }
     }
 
     async apagar() {
         return await tabelaProdutos.remover(this.id, this.fornecedor)
+    }
+
+    diminuirEstoque() {
+        return tabelaProdutos.subtrair(
+            {
+                id: this.id,
+                fornecedor: this.fornecedor
+            },
+            'estoque',
+            this.estoque
+        )
     }
 }
 

@@ -74,7 +74,7 @@ class SerializadorProduto extends Serializador {
     constructor(contentType, extras) {
         super()
         this.contentType = contentType
-        this.camposPublicos = ['id', 'titulo', 'preco', 'estoque'].concat(extras || [])
+        this.camposPublicos = ['id', 'titulo'].concat(extras || [])
         this.tagSingular = 'produto'
         this.tagPlural = 'produtos'
     }

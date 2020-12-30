@@ -38,7 +38,7 @@ roteador.get('/:produto_id', async (req, res, next) => {
         await produto.carregar()
         const serializador = new serializadorProduto(
             res.getHeader('Content-Type'),
-            ['fornecedor', 'dataCriacao', 'dataAtualizacao', 'versao']
+            ['preco', 'estoque', 'fornecedor', 'dataCriacao', 'dataAtualizacao', 'versao']
         )
         res.send(
             serializador.serializar(produto)
@@ -73,6 +73,22 @@ roteador.delete('/:produto_id', async (req, res, next) => {
         await produto.carregar()
         await produto.apagar()
 
+        res.status(204).end()
+    } catch (erro) {
+        next(erro)
+    }
+})
+
+roteador.post('/:produto_id/diminuir-estoque', async (req, res, next) => {
+    try {
+        const ids = {
+            id: req.params.produto_id,
+            fornecedor: req.fornecedor.id
+        }
+        const produto = new Produto(ids)
+        await produto.carregar()
+        produto.estoque = produto.estoque - req.body.quantidade
+        await produto.diminuirEstoque()
         res.status(204).end()
     } catch (erro) {
         next(erro)

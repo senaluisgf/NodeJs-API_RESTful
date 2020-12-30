@@ -1,12 +1,12 @@
 const modelo = require('./modeloTabelaProdutos')
 const NaoEncontrado = require('../../../erros/NaoEncontrado')
+const instancia = require('../../../banco-de-dados/index')
 
 module.exports = {
-    listar(fornecedor_id) {
+    listar(fornecedor_id, criterios = {}) {
+        criterios.fornecedor = fornecedor_id
         return modelo.findAll({
-            where: {
-                fornecedor: fornecedor_id
-            },
+            where: criterios,
             raw: true
         })
     },
@@ -36,13 +36,21 @@ module.exports = {
         })
 
     },
-    atualizar(produto_id, fornecedor_id, dados) {
+    atualizar(acharProduto, dados) {
         return modelo.update(dados, {
-            where: {
-                id: produto_id,
-                fornecedor: fornecedor_id
-            },
+            where: acharProduto,
             raw: true
+        })
+    },
+    subtrair(acharProduto, campo, valor) {
+        return instancia.transaction(async transacao => {
+            const produto = await modelo.findOne({ where: acharProduto })
+
+            produto[campo] = valor
+
+            await produto.save()
+
+            return produto
         })
     }
 }

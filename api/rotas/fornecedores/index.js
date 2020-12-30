@@ -3,6 +3,7 @@ const TabelaFornecedores = require('./tabelaFornecedores')
 const Fornecedor = require('./fornecedor')
 const SerializadorFornecedor = require('../../serializador').SerializadorFornecedor
 const RotasProdutos = require('./produtos/index')
+const tabelaProdutos = require('./produtos/tabelaProdutos')
 
 roteador.get('/', async (req, res) => {
     const resultados = await TabelaFornecedores.listar()
@@ -67,6 +68,20 @@ roteador.delete('/:fornecedor_id', async (req, res, next) => {
         await fornecedor.deletar()
 
         res.status(204).end()
+    } catch (erro) {
+        next(erro)
+    }
+})
+
+roteador.post('/:fornecedor_id/calcular-reposicao-de-estoque', async (req, res, next) => {
+    try {
+        const fornecedor_id = req.params.fornecedor_id
+        const fornecedor = new Fornecedor({ id: fornecedor_id })
+        await fornecedor.carregar()
+        const produtos = await tabelaProdutos.listar(fornecedor.id, { estoque: 0 })
+        res.send(
+            { mensagem: `${produtos.length} Produtos precisam ser reabastecidos` }
+        )
     } catch (erro) {
         next(erro)
     }
