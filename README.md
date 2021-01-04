@@ -8,3 +8,5 @@ Repositório criado para acompanhar e fixar curso de NodeJs da [Alura](https://w
 ## Cursos Implementados
 [NodeJS: Crie uma API REST padronizada e escalável](https://cursos.alura.com.br/course/nodejs-api-rest-padronizada-escalavel)
 ![NodeJS: Crie uma API REST padronizada e escalável](./cursos/aluraNodeJs2_1.png)
+[NodeJS: Avançando em APIs REST com controle de versões](https://cursos.alura.com.br/course/nodejs-api-rest-padronizada-escalavel)
+![NodeJS: Crie uma API REST padronizada e escalável](./cursos/aluraNodeJs2_2.png)

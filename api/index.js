@@ -4,6 +4,8 @@ const bodyParser = require('body-parser')
 const config = require('config')
 
 const rotasFornecedores = require('./rotas/fornecedores/index')
+const rotasFornecedoresV2 = require('./rotas/fornecedores/rotas.v2')
+const rotasFornecedoresV3 = require('./rotas/fornecedores/rotas.v3')
 
 const NaoEncontrado = require('./erros/NaoEncontrado')
 const CampoInvalido = require('./erros/CampoInvalido')
@@ -29,11 +31,18 @@ app.use((req, res, next) => {
 })
 
 app.use((req, res, next) => {
+    res.set('Access-Control-Allow-Origin', '*')
+    next()
+})
+
+app.use((req, res, next) => {
     res.set('X-Powered-By', 'Gatito Petshop')
     next()
 })
 
 app.use('/api/fornecedores', rotasFornecedores)
+app.use('/api/v2/fornecedores', rotasFornecedoresV2)
+app.use('/api/v3/fornecedores', rotasFornecedoresV3)
 
 app.use((erro, req, res, next) => {
     let status = 500
